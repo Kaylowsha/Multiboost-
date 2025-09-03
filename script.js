@@ -1,5 +1,5 @@
 // MULTIBOOST - ENTRENAMIENTO DE MULTIPLICACIONES
-// Versión Compatible con todos los navegadores
+// Versión Compatible con limpieza automática - CORREGIDA
 
 function MultiBoost() {
     // Estado de la aplicación
@@ -275,6 +275,9 @@ MultiBoost.prototype.startTraining = function() {
         console.log('📊 Tablas:', this.selectedTables);
         console.log('🎯 Ejercicios:', this.exerciseCount);
 
+        // LIMPIEZA AUTOMÁTICA ANTES DE EMPEZAR
+        this.cleanupSession();
+        
         this.resetStats();
         this.generateExercises();
         
@@ -289,15 +292,27 @@ MultiBoost.prototype.startTraining = function() {
     }
 };
 
-// Generar ejercicios
+// Generar ejercicios (CON PROTECCIÓN ANTI-BUCLES)
 MultiBoost.prototype.generateExercises = function() {
     try {
+        console.log('📝 Generando ejercicios...');
         this.exercises = [];
         
+        if (this.selectedTables.length === 0) {
+            console.log('❌ Error: No hay tablas seleccionadas');
+            return;
+        }
+        
         for (var i = 0; i < this.exerciseCount; i++) {
+            console.log('📝 Generando ejercicio ' + (i + 1) + '/' + this.exerciseCount);
+            
+            // Elegir tabla aleatoria de las seleccionadas
             var table = this.selectedTables[Math.floor(Math.random() * this.selectedTables.length)];
+            
+            // Generar multiplicando aleatorio (1-10)
             var multiplicand = Math.floor(Math.random() * 10) + 1;
             
+            // Crear ejercicio
             var exercise = {
                 table: table,
                 multiplicand: multiplicand,
@@ -305,41 +320,81 @@ MultiBoost.prototype.generateExercises = function() {
                 correctAnswer: table * multiplicand
             };
             
+            console.log('➡️ Ejercicio creado:', exercise.question, '=', exercise.correctAnswer);
+            
+            // Generar opciones de respuesta
             exercise.options = this.generateOptions(exercise.correctAnswer);
+            
             this.exercises.push(exercise);
+            
+            // Log cada 10 ejercicios para ver progreso
+            if ((i + 1) % 10 === 0) {
+                console.log('✅ Progreso: ' + (i + 1) + '/' + this.exerciseCount + ' ejercicios generados');
+            }
         }
         
-        console.log('📝 Ejercicios generados:', this.exercises.length);
+        console.log('✅ TODOS los ejercicios generados:', this.exercises.length);
     } catch (error) {
-        console.log('Error generando ejercicios:', error);
+        console.log('❌ Error crítico generando ejercicios:', error);
+        // Crear ejercicios de emergencia
+        this.exercises = [{
+            table: 2,
+            multiplicand: 3,
+            question: '2 × 3 = ?',
+            correctAnswer: 6,
+            options: [6, 5, 7, 8]
+        }];
     }
 };
 
-// Generar opciones de respuesta
+// Generar opciones de respuesta (SIN BUCLES INFINITOS)
 MultiBoost.prototype.generateOptions = function(correctAnswer) {
     try {
         var options = [correctAnswer];
+        var attempts = 0;
+        var maxAttempts = 20; // LÍMITE DE INTENTOS
         
-        while (options.length < 4) {
+        // Opción 1: Suma de dígitos
+        var sumOption = this.getSumOfDigits(correctAnswer);
+        if (sumOption !== correctAnswer && sumOption > 0) {
+            options.push(sumOption);
+        }
+        
+        // Generar opciones restantes con límite de intentos
+        while (options.length < 4 && attempts < maxAttempts) {
             var wrongAnswer;
+            var variance = Math.floor(Math.random() * 15) + 1; // Mayor rango
             
-            if (options.length === 1) {
-                wrongAnswer = this.getSumOfDigits(correctAnswer);
+            if (Math.random() > 0.5) {
+                wrongAnswer = correctAnswer + variance;
             } else {
-                var variance = Math.floor(Math.random() * 10) + 1;
-                wrongAnswer = Math.random() > 0.5 ? 
-                    correctAnswer + variance : 
-                    Math.max(1, correctAnswer - variance);
+                wrongAnswer = Math.max(1, correctAnswer - variance);
             }
             
-            if (options.indexOf(wrongAnswer) === -1 && wrongAnswer > 0) {
+            // Agregar si es único y válido
+            if (options.indexOf(wrongAnswer) === -1 && wrongAnswer > 0 && wrongAnswer < 200) {
                 options.push(wrongAnswer);
+            }
+            
+            attempts++;
+        }
+        
+        // Si aún faltan opciones, usar fórmula fija
+        while (options.length < 4) {
+            var fallbackOption = correctAnswer + options.length;
+            if (options.indexOf(fallbackOption) === -1) {
+                options.push(fallbackOption);
+            } else {
+                options.push(correctAnswer + options.length + 10);
             }
         }
         
+        console.log('✅ Opciones generadas:', options);
         return this.shuffleArray(options);
+        
     } catch (error) {
         console.log('Error generando opciones:', error);
+        // Fallback seguro
         return [correctAnswer, correctAnswer + 1, correctAnswer + 2, correctAnswer + 3];
     }
 };
@@ -403,6 +458,9 @@ MultiBoost.prototype.showNextExercise = function() {
             optionBtns[i].setAttribute('data-answer', exercise.options[i]);
             optionBtns[i].className = 'option-btn';
             optionBtns[i].disabled = false;
+            optionBtns[i].style.background = '';
+            optionBtns[i].style.color = '';
+            optionBtns[i].style.borderColor = '';
         }
 
         this.startExerciseTimer();
@@ -702,6 +760,7 @@ MultiBoost.prototype.configureResultsButtons = function(percentage) {
 MultiBoost.prototype.repeatTraining = function() {
     try {
         console.log('🔄 Repitiendo entrenamiento...');
+        this.cleanupSession();
         this.startTraining();
     } catch (error) {
         console.log('Error repitiendo:', error);
@@ -712,9 +771,68 @@ MultiBoost.prototype.repeatTraining = function() {
 MultiBoost.prototype.newTraining = function() {
     try {
         console.log('🚀 Nuevo entrenamiento');
+        this.cleanupSession();
         this.showScreen('config');
     } catch (error) {
         console.log('Error nuevo entrenamiento:', error);
+    }
+};
+
+// LIMPIEZA COMPLETA DE SESIÓN - ¡LA CLAVE DEL ARREGLO!
+MultiBoost.prototype.cleanupSession = function() {
+    try {
+        console.log('🧹 Limpiando sesión...');
+        
+        // Limpiar todos los timers
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
+        
+        if (this.sessionTimer) {
+            clearInterval(this.sessionTimer);
+            this.sessionTimer = null;
+        }
+        
+        // Resetear estado
+        this.currentExercise = 0;
+        this.exercises = [];
+        this.timeLeft = 10;
+        this.sessionStartTime = null;
+        
+        // Limpiar interfaz de ejercicios
+        var optionBtns = document.querySelectorAll('.option-btn');
+        for (var i = 0; i < optionBtns.length; i++) {
+           optionBtns[i].className = 'option-btn';
+           optionBtns[i].disabled = false;
+           optionBtns[i].textContent = '';
+           optionBtns[i].style.background = '';
+           optionBtns[i].style.color = '';
+           optionBtns[i].style.borderColor = '';
+        }
+        
+        // Resetear timer visual
+        var timerEl = document.getElementById('timer-display');
+        if (timerEl) {
+            timerEl.textContent = '10';
+            timerEl.className = 'timer';
+        }
+        
+        // Resetear barra de progreso
+        var progressFill = document.getElementById('progress-fill');
+        if (progressFill) {
+            progressFill.style.width = '0%';
+        }
+        
+        // Resetear tiempo total
+        var totalTimeEl = document.getElementById('total-time');
+        if (totalTimeEl) {
+            totalTimeEl.textContent = '00:00';
+        }
+        
+        console.log('✅ Sesión completamente limpia');
+    } catch (error) {
+        console.log('Error limpiando sesión:', error);
     }
 };
 
