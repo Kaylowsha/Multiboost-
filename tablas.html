@@ -8,30 +8,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- PANTALLA DE BIENVENIDA -->
-    <div id="welcome-screen" class="screen active">
-        <div class="container">
-            <h1 class="logo">⚡ MultiBoost ⚡</h1>
-            <p class="slogan">¡Potencia tu mente, domina las tablas!</p>
-            <div class="welcome-animation">
-                <div class="math-icon">🧮</div>
-           </div>
-            
-       <div>✓ Elige la o las tablas que quieras practicar</div>
-            <div>✓ Selecciona la cantidad de ejercicicios</div>
-            <div>✓ Presiona "INICIAR ENTRENAMIENTO!!"</div>
-                 
-            
-            <!-- Botón Volver al Inicio -->
-        <button onclick="goToHome()" class="btn-secondary" style="margin-bottom: 15px;">
-        🏠 ← Volver al Inicio
-           </button>
-            <button id="start-btn" class="btn-primary">
-                🚀 ¡COMENZAR ENTRENAMIENTO!
-            </button>
+   <!-- PANTALLA DE BIENVENIDA -->
+<div id="welcome-screen" class="screen active">
+    <div class="container">
+        <h1 class="logo">⚡ MultiBoost ⚡</h1>
+        <p class="slogan">¡Potencia tu mente, domina las tablas!</p>
+        <div class="welcome-animation">
+            <div class="math-icon">🧮</div>
+            <div class="boost-effect">💥</div>
         </div>
+        
+        <!-- INSTRUCCIONES MOVIDAS AQUÍ (MÁS ARRIBA) -->
+        <div style="margin: 20px 0; font-size: 0.9rem; opacity: 0.8;">
+            <div>✓ Elige la o las tablas que quieras practicar</div>
+            <div>✓ Selecciona la cantidad de ejercicios</div>
+            <div>✓ Presiona "INICIAR ENTRENAMIENTO!!"</div>
+        </div>
+        
+        <!-- Botón Volver al Inicio -->
+        <button onclick="goToHome()" class="btn-secondary" style="margin-bottom: 15px;">
+            🏠 ← Volver al Inicio
+        </button>
+        <button id="start-btn" class="btn-primary">
+            🚀 ¡COMENZAR ENTRENAMIENTO!
+        </button>
     </div>
-
+</div>
     <!-- PANTALLA DE CONFIGURACIÓN -->
     <div id="config-screen" class="screen">
         <div class="container">
