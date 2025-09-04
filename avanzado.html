@@ -258,14 +258,19 @@
         
         let timer = null;
 
-        // Funciones de navegación
-        function goToConfig() {
-            console.log('Navegando a configuración');
-            document.getElementById('welcome-screen').style.display = 'none';
-            document.getElementById('config-screen').style.display = 'block';
-            document.getElementById('exercise-screen').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'none';
-        }
+      function goToConfig() {
+    console.log('Navegando a configuración');
+    
+    // RESETEAR SCROLL
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('config-screen').style.display = 'block';
+    document.getElementById('exercise-screen').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'none';
+}
 
         function goToExercise() {
             console.log('Navegando a ejercicios');
@@ -532,30 +537,39 @@
             goToResults();
         }
 
-        function resetApp() {
-            config = {
-                type: null,
-                count: '10',
-                inverseMode: false
-            };
-            
-            // Resetear UI
-            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                btn.style.background = 'rgba(255, 255, 255, 0.2)';
-            });
-            document.querySelectorAll('.count-btn').forEach((btn, index) => {
-                btn.classList.remove('active-count');
-                btn.style.background = '#3b82f6';
-                if (index === 0) {
-                    btn.classList.add('active-count');
-                    btn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
-                }
-            });
-            document.getElementById('inverse-mode').checked = false;
-            
-            updateStartButton();
-            goToWelcome();
+       function resetApp() {
+    config = {
+        type: null,
+        count: '10',
+        inverseMode: false
+    };
+    
+    // Resetear UI
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.style.background = 'rgba(255, 255, 255, 0.2)';
+    });
+    document.querySelectorAll('.count-btn').forEach((btn, index) => {
+        btn.classList.remove('active-count');
+        btn.style.background = '#3b82f6';
+        if (index === 0) {
+            btn.classList.add('active-count');
+            btn.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
         }
+    });
+    document.getElementById('inverse-mode').checked = false;
+    
+    updateStartButton();
+    
+    // RESETEAR SCROLL - VERSIÓN SAFARI COMPATIBLE
+    document.body.scrollTop = 0; // Safari
+    document.documentElement.scrollTop = 0; // Chrome, Firefox, IE, Opera
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    // Pequeño delay para asegurar el scroll antes del cambio
+    setTimeout(() => {
+        goToWelcome();
+    }, 100);
+}
         // Función para volver al inicio
 function goToHome() {
     console.log('Navegando al inicio');
