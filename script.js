@@ -858,6 +858,11 @@ MultiBoost.prototype.playIncorrectSound = function() {
 MultiBoost.prototype.playCelebrationSound = function() {
     console.log('🔊 ♪ Sonido: ¡Celebración!');
 };
+// Función para volver al inicio
+window.goToHome = function() {
+    console.log('Navegando al inicio desde tablas');
+    window.location.href = 'index.html';
+};
 
 // Inicializar MultiBoost
 (function() {
@@ -868,4 +873,5 @@ MultiBoost.prototype.playCelebrationSound = function() {
     } else {
         window.multiBoost = new MultiBoost();
     }
+    
 })();
