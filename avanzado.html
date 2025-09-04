@@ -288,13 +288,28 @@
             document.getElementById('results-screen').style.display = 'block';
         }
 
-        function goToWelcome() {
-            console.log('Navegando a bienvenida');
-            document.getElementById('welcome-screen').style.display = 'block';
-            document.getElementById('config-screen').style.display = 'none';
-            document.getElementById('exercise-screen').style.display = 'none';
-            document.getElementById('results-screen').style.display = 'none';
-        }
+       function goToWelcome() {
+    console.log('Navegando a bienvenida');
+    
+    // SCROLL RESET MÚLTIPLE - SAFARI MAC FIX
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    window.pageYOffset = 0;
+    window.scrollTo(0, 0);
+    
+    // Cambiar pantallas
+    document.getElementById('welcome-screen').style.display = 'block';
+    document.getElementById('config-screen').style.display = 'none';
+    document.getElementById('exercise-screen').style.display = 'none';
+    document.getElementById('results-screen').style.display = 'none';
+    
+    // FORCE SCROLL DESPUÉS DEL CAMBIO
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }, 50);
+}
 
         // Funciones de configuración
         function selectDifficulty(type, btn) {
@@ -537,7 +552,7 @@
             goToResults();
         }
 
-       function resetApp() {
+    function resetApp() {
     config = {
         type: null,
         count: '10',
@@ -559,16 +574,7 @@
     document.getElementById('inverse-mode').checked = false;
     
     updateStartButton();
-    
-    // RESETEAR SCROLL - VERSIÓN SAFARI COMPATIBLE
-    document.body.scrollTop = 0; // Safari
-    document.documentElement.scrollTop = 0; // Chrome, Firefox, IE, Opera
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    
-    // Pequeño delay para asegurar el scroll antes del cambio
-    setTimeout(() => {
-        goToWelcome();
-    }, 100);
+    goToWelcome(); // Sin delay, el scroll lo maneja goToWelcome()
 }
         // Función para volver al inicio
 function goToHome() {
