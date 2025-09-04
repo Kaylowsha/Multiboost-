@@ -17,6 +17,11 @@
                 <div class="math-icon">🧮</div>
                 <div class="boost-effect">💥</div>
             </div>
+
+            <!-- Botón Volver al Inicio -->
+        <button onclick="goToHome()" class="btn-secondary" style="margin-bottom: 15px;">
+        🏠 ← Volver al Inicio
+           </button>
             <button id="start-btn" class="btn-primary">
                 🚀 ¡COMENZAR ENTRENAMIENTO!
             </button>
@@ -139,9 +144,10 @@
                 <!-- Aquí se mostrarán los errores -->
             </div>
 
-            <div class="results-actions">
-                <button id="repeat-btn" class="btn-secondary">🔄 Repetir</button>
-                <button id="new-training-btn" class="btn-primary">🚀 Nuevo Entrenamiento</button>
+           <div class="results-actions">
+            <button onclick="goToHome()" class="btn-secondary">🏠 Volver al Inicio</button>
+           <button id="repeat-btn" class="btn-secondary">🔄 Repetir</button>
+           <button id="new-training-btn" class="btn-primary">🚀 Nuevo Entrenamiento</button>
             </div>
         </div>
     </div>
