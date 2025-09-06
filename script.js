@@ -14,6 +14,7 @@ function MultiBoost() {
     this.totalTime = 0;
     this.sessionStartTime = null;
     this.sessionTimer = null;
+    this.lastCorrectPosition = -1;
     
     // Estadísticas
     this.stats = {
@@ -390,7 +391,7 @@ MultiBoost.prototype.generateOptions = function(correctAnswer) {
         }
         
         console.log('✅ Opciones generadas:', options);
-        return this.shuffleArray(options);
+        return this.shuffleOptionsSmartly(options, correctAnswer);
         
     } catch (error) {
         console.log('Error generando opciones:', error);
@@ -425,7 +426,59 @@ MultiBoost.prototype.shuffleArray = function(array) {
         return array;
     }
 };
-
+// NUEVA FUNCIÓN: SHUFFLE INTELIGENTE
+MultiBoost.prototype.shuffleOptionsSmartly = function(options, correctAnswer) {
+    try {
+        // Mezclar normalmente primero
+        var shuffled = this.shuffleArray(options);
+        
+        // Encontrar posición de la respuesta correcta después del shuffle
+        var newCorrectIndex = shuffled.indexOf(correctAnswer);
+        
+        // Si es el primer ejercicio, cualquier posición está bien
+        if (this.lastCorrectPosition === -1) {
+            this.lastCorrectPosition = newCorrectIndex;
+            console.log('🎯 Primera respuesta correcta en posición:', newCorrectIndex);
+            return shuffled;
+        }
+        
+        // Si la nueva posición es igual a la anterior, reorganizar
+        if (newCorrectIndex === this.lastCorrectPosition) {
+            console.log('⚠️ Misma posición detectada. Reorganizando...');
+            
+            // Buscar una posición diferente disponible
+            var availablePositions = [];
+            for (var i = 0; i < 4; i++) {
+                if (i !== this.lastCorrectPosition) {
+                    availablePositions.push(i);
+                }
+            }
+            
+            // Elegir una posición aleatoria de las disponibles
+            var newPosition = availablePositions[Math.floor(Math.random() * availablePositions.length)];
+            
+            // Intercambiar elementos
+            var temp = shuffled[newPosition];
+            shuffled[newPosition] = shuffled[newCorrectIndex];
+            shuffled[newCorrectIndex] = temp;
+            
+            console.log('🔄 Respuesta correcta movida de posición', newCorrectIndex, 'a posición', newPosition);
+            this.lastCorrectPosition = newPosition;
+        } else {
+            // La posición ya es diferente, guardarla
+            this.lastCorrectPosition = newCorrectIndex;
+            console.log('✅ Respuesta correcta en nueva posición:', newCorrectIndex);
+        }
+        
+        return shuffled;
+        
+    } catch (error) {
+        console.log('Error en shuffle inteligente:', error);
+        // Si hay error, usar el método anterior
+        this.lastCorrectPosition = -1;
+        return this.shuffleArray(options);
+    }
+};
 // Mostrar siguiente ejercicio
 MultiBoost.prototype.showNextExercise = function() {
     try {
@@ -829,7 +882,7 @@ MultiBoost.prototype.cleanupSession = function() {
         if (totalTimeEl) {
             totalTimeEl.textContent = '00:00';
         }
-        
+        this.lastCorrectPosition = -1;
         console.log('✅ Sesión completamente limpia');
     } catch (error) {
         console.log('Error limpiando sesión:', error);
